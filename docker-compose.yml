@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  backend:
+    image: backend
+    build:
+      context: BookStore/backend
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      URL_DB_CONNECTION: "mongodb://172.17.0.1:27017/bookstore"
+    ports:
+      - 5000:5000  
+    networks:
+      red:
+        ipv4_address: 172.16.238.200
+
+  frontend:
+    image: frontend
+    depends_on:
+      - backend
+    build:
+      context: BookStore/frontend
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000
+    networks:
+      red:
+        ipv4_address: 172.16.238.201
+
+networks:
+  red:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.238.0/24
